@@ -1,3 +1,4 @@
+
 class Movie:
     __slots__=('title', 'times', 'duration')
 
@@ -5,11 +6,9 @@ class Movie:
         result = 'Title: '
         result += self.title + ' Times: '
         for time in self.times:
-            result += str(self.time) + ', '
-        result += 'Duration: ' + self.duration
+            result += str(time) + ', '
+        result += 'Duration: ' + str(self.duration)
         return result
-
-
 
 def mkMovie(title, times, duration):
     newMovie = Movie
@@ -44,7 +43,7 @@ def main():
                     times.append(time)
             newMovie = mkMovie(title, times, dur)
             movies.append(newMovie)
-            print(newMovie.title)
+            print(newMovie.__str__(newMovie))
 
 main()
             
