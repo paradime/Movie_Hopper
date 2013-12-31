@@ -15,7 +15,7 @@ class Movie:
         result = 'Title: '
         result += self.title + ' Times: '
         for time in self.times:
-            result += str(time) + ', '
+            result += intToTime(time) + ', '
         result += 'Duration: ' + str(self.duration)
         return result
 
@@ -150,7 +150,7 @@ def main():
                     times.append(time)
             newMovie = mkMovie(title, times, dur)
             movies.append(newMovie)
-            print("\n " + newMovie.__str__(newMovie))
+            print("\n" + newMovie.__str__(newMovie))
     print("\nEarliest movie you can make: " + intToTime(movies[0].getEarliestStart(movies[0], startTime)))
 
 main()
