@@ -1,4 +1,8 @@
-
+"""
+Movie Hopper Application for finding the most efficient order to watch movies at a theater
+when hopping
+Author: Bryon Wilkins
+"""
 class Movie:
     __slots__=('title', 'times', 'duration')
 
@@ -9,6 +13,9 @@ class Movie:
             result += str(time) + ', '
         result += 'Duration: ' + str(self.duration)
         return result
+
+class MovieMap:
+    __slots__=('startTime', 'endTime', 'waitTime')
 
 def mkMovie(title, times, duration):
     newMovie = Movie
