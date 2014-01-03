@@ -4,58 +4,7 @@ when hopping
 Author: Bryon Wilkins
 """
 from copy import deepcopy
-
-class Movie(object):
-    """
-    title       - string (title of movie)
-    times       - list of ints (times that the movies will be playing)
-    duration    - int (duration of movie)
-    """
-    __slots__=('title', 'times', 'duration')
-
-    """
-    @params
-    title - string (title of movie)
-    times - list of ints (times movie will be playing)
-    duration - int (duration of movie)
-    """
-    def __init__(self, title, times, duration):
-        self.title = title
-        self.times = times
-        self.duration = duration
-
-    def __str__(self):
-        result = "Title: "
-        result += self.title + " Times: "
-        for time in self.times:
-            result += intToTime(time) + ", "
-        result += "Duration: " + str(self.duration)
-        return result
-
-    """
-    Clean function for getting the end time of a movie
-    """
-    def getEndTime(self, startTime):
-        return startTime + self.duration
-
-    """
-    @param
-    self - movie object
-    start - int (earliest that you can be to the movie)
-    @return
-    Returns an int which is the earliest movie time larger than start
-    -1 - no more times
-    """
-    def getEarliestStart(self, start):
-        earliest = 1440 #The maximum number of minutes in one day
-        for time in self.times:
-            #Compare each time to start and the earliest
-            #return the number 
-            if(start < time and earliest > time):
-                earliest = time
-        if(earliest == 1440):
-            earliest = -1
-        return earliest
+from movie import Movie
 
 class MovieMap:
     """
@@ -99,14 +48,49 @@ class MovieNode:
 
     def __str__(self):
         result = "\n"
-        result += self.movie.title + " at \t" + intToTime(self.startTime) + ". "
+        result += self.movie.title +" at " + intToTime(self.startTime) + ". "
         if(self.next is not None):
-            result += "Followed by " + str(self.next)
+            result += str(self.next)
         return result
 
     """
+    Prints a table for nodes in ascending order
+    """
+    def printTable(self):
+        titleList = []
+        timeList = []
+        self.fillTitleList(titleList)
+        self.fillTimeList(timeList)
+        nameJust = intLongestString(titleList)
+        print("#:".rjust(2), "Title:".rjust(nameJust), "Time:".rjust(5))
+        for i in range(len(titleList)):
+            print(str(i + 1).rjust(2), titleList[i].rjust(nameJust), timeList[i].rjust(5))
+
+    """
+    Helper function to fill titleList
+    @param
+    titleList - a list of titles to be filled
+    """
+    def fillTitleList(self, titleList):
+        titleList.append(self.movie.title)
+        if(self.next is not None):
+            self.next.fillTitleList(titleList)
+
+    """
+    Helper function to fill timeList
+    @param
+    timeList - a list of times to be filled
+    """
+    def fillTimeList(self, timeList):
+        timeList.append(intToTime(self.startTime))
+        if(self.next is not None):
+            self.next.fillTimeList(timeList)
+
+    """
+    @params
     visited - list of visited movies
-    returns the next Earliest movie that isn't in visited
+    @return 
+    a new MovieNode that is next in movies and has a time after current movies endTime
     """
     def nextNode(self, visited):
         for movie in self.movies:
@@ -136,13 +120,28 @@ time - int (int representation of minutes past midnight)
 string - military time representation (hr mn)
 """
 def intToTime(time):
-    result = str(int(time/60))
+    if(int(time/60) < 10):
+        result = "0" + str(int(time/60))
+    else:
+        result = str(int(time/60))
     if(time%60 < 10):
         result += " 0" + str(time%60)
     else:
         result += " " + str(time%60)
     return result
 
+"""
+@param
+stringList - list of strings
+@return
+int - the length of the longest string in stringList
+"""
+def intLongestString(stringList):
+    length = 0
+    for string in stringList:
+        if len(string) > length:
+            length = len(string)
+    return length
     
 def main():
     inp = ""
@@ -165,13 +164,11 @@ def main():
                     time = timeToInt(inp)
                     times.append(time)
             newMovie = Movie(title, times, dur)
-            print("\n" + str(newMovie))
             movies.append(newMovie)
     startNode = MovieNode(movies[0], movies[0].getEarliestStart(startTime), movies)
     movieMap = MovieMap(startNode)
     movieMap.fillMap()
-    print("\nEarliest movie you can make: " + str(movieMap.startNode))
+    print("\nMovie order you can make:")
+    movieMap.startNode.printTable()
 
 main()
-            
-        
