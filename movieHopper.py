@@ -3,7 +3,7 @@ Movie Hopper Application for finding the most efficient order to watch movies at
 when hopping
 Author: Bryon Wilkins
 """
-class Movie:
+class Movie(object):
     """
     title       - string (title of movie)
     times       - list of ints (times that the movies will be playing)
@@ -11,12 +11,23 @@ class Movie:
     """
     __slots__=('title', 'times', 'duration')
 
+    """
+    @params
+    title - string (title of movie)
+    times - list of ints (times movie will be playing)
+    duration - int (duration of movie)
+    """
+    def __init__(self, title, times, duration):
+        self.title = title
+        self.times = times
+        self.duration = duration
+
     def __str__(self):
-        result = 'Title: '
-        result += self.title + ' Times: '
+        result = "Title: "
+        result += self.title + " Times: "
         for time in self.times:
-            result += intToTime(time) + ', '
-        result += 'Duration: ' + str(self.duration)
+            result += intToTime(time) + ", "
+        result += "Duration: " + str(self.duration)
         return result
 
     """
@@ -54,21 +65,6 @@ class MovieNode:
     __slots__=('neighbors', 'movie')
 
 """
-@params
-title - string (title of movie)
-times - list of ints (times movie will be playing)
-duration - int (duration of movie)
-@return
-Movie object with parameters as variables
-"""
-def mkMovie(title, times, duration):
-    newMovie = Movie
-    newMovie.title = title
-    newMovie.times = times
-    newMovie.duration = duration
-    return newMovie
-
-"""
 @param
 movies - list of movies
 movie - movie object (your start node for this map)
@@ -82,6 +78,7 @@ MovieMap object with start state as movie parameter.
     Node neighbors should be extracted from movies
 """
 def mkMovieMap(movies, movie, startTime):
+    #Currently Unimplemented
     newMap = MovieMap
     newMap.visited = [movie]
     startNode = mkMovieNode(movies, movie, startTime, newMap)
@@ -98,11 +95,21 @@ MovieNode object where movie is same as parameter
         startTime + movie.duration 
 """
 def mkMovieNode(movies, movie, startTime, myMap):
+    #Currently Unimplemented
     newNode = MovieNode
     newNode.movie = movie
     for mov in movies:
         if myMap.visited.count(mov) == 0:
             myMap.visited.append(mov)
+
+"""
+@parameter
+movieMap - fully constructed MovieMap
+@return
+a list of enums? (Movie, startTime)
+"""
+#def dijkstra(movieMap):
+    #currently unimplemented
 
 """
 @para
@@ -120,7 +127,7 @@ def timeToInt(time):
 @param
 time - int (int representation of minutes past midnight)
 @return
-string military time representation (hr mn)
+string - military time representation (hr mn)
 """
 def intToTime(time):
     result = str(int(time/60))
@@ -148,10 +155,10 @@ def main():
                 if(inp != "2"):
                     time = timeToInt(inp)
                     times.append(time)
-            newMovie = mkMovie(title, times, dur)
+            newMovie = Movie(title, times, dur)
+            print("\n" + str(newMovie))
             movies.append(newMovie)
-            print("\n" + newMovie.__str__(newMovie))
-    print("\nEarliest movie you can make: " + intToTime(movies[0].getEarliestStart(movies[0], startTime)))
+    print("\nEarliest movie you can make: " + intToTime(movies[0].getEarliestStart(startTime)))
 
 main()
             
