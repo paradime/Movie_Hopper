@@ -143,6 +143,12 @@ def intLongestString(stringList):
             length = len(string)
     return length
     
+"""
+Main function for MovieHopper
+Asks for input
+Converts input into a list of paths the user could make
+Prints the possible paths that can be taken
+"""
 def main():
     inp = ""
     #1 - end of movie input

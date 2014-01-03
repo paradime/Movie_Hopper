@@ -1,3 +1,7 @@
+"""
+Movie Class used by Movie Hopper application
+Author: Bryon Wilkins
+"""
 class Movie(object):
     """
     title       - string (title of movie)
