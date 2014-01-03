@@ -3,6 +3,8 @@ Movie Hopper Application for finding the most efficient order to watch movies at
 when hopping
 Author: Bryon Wilkins
 """
+from copy import deepcopy
+
 class Movie(object):
     """
     title       - string (title of movie)
@@ -31,6 +33,12 @@ class Movie(object):
         return result
 
     """
+    Clean function for getting the end time of a movie
+    """
+    def getEndTime(self, startTime):
+        return startTime + self.duration
+
+    """
     @param
     self - movie object
     start - int (earliest that you can be to the movie)
@@ -57,59 +65,57 @@ class MovieMap:
     """
     __slots__=('startNode', 'visited', 'waitTime')
 
+    def __init__(self, startNode):
+        self.startNode = startNode
+        self.waitTime = 0
+        self.visited = []
+        self.visited.append(startNode.movie)
+
+    """
+    Fills the current map with nodes
+    """
+    def fillMap(self):
+        tempVis = deepcopy(self.visited)
+        curNode = self.startNode
+        while(curNode is not None):
+            curNode.next = curNode.nextNode(self.visited)
+            curNode = curNode.next
+            tempVis = deepcopy(self.visited)
+
 class MovieNode:
     """
-    neighbors   - list of nodes
-    movie       - movie (corresponding movie)
+    next - next movie in list
+    movie - movie (corresponding movie)
+    startTime - int (start time of this movie)
+    movies - list of all movies
     """
-    __slots__=('neighbors', 'movie')
+    __slots__=('next', 'movie', 'startTime', 'movies')
 
-"""
-@param
-movies - list of movies
-movie - movie object (your start node for this map)
-startTime - int (the earliest time you can make it to the movies)
-@return
-MovieMap object with start state as movie parameter.
-    startTime should determine what time of movie should be used
-    Should be a map where each node is directed towards
-        the EARLIEST start time of a movie that isn't 
-        already visited
-    Node neighbors should be extracted from movies
-"""
-def mkMovieMap(movies, movie, startTime):
-    #Currently Unimplemented
-    newMap = MovieMap
-    newMap.visited = [movie]
-    startNode = mkMovieNode(movies, movie, startTime, newMap)
+    def __init__(self, movie, startTime, movies):
+        self.movie = movie
+        self.startTime = startTime
+        self.movies = movies
+        self.next = None
 
-"""
-@param
-movies - list of movies (all movies)
-movie - movie object (our node's data)
-startTime - int (the earliest time we can make it to this movie)
-myMap - MovieMap object (does not need to be complete)
-@return
-MovieNode object where movie is same as parameter
-    Neighbors should be based on this algorithm:
-        startTime + movie.duration 
-"""
-def mkMovieNode(movies, movie, startTime, myMap):
-    #Currently Unimplemented
-    newNode = MovieNode
-    newNode.movie = movie
-    for mov in movies:
-        if myMap.visited.count(mov) == 0:
-            myMap.visited.append(mov)
+    def __str__(self):
+        result = "\n"
+        result += self.movie.title + " at \t" + intToTime(self.startTime) + ". "
+        if(self.next is not None):
+            result += "Followed by " + str(self.next)
+        return result
 
-"""
-@parameter
-movieMap - fully constructed MovieMap
-@return
-a list of enums? (Movie, startTime)
-"""
-#def dijkstra(movieMap):
-    #currently unimplemented
+    """
+    visited - list of visited movies
+    returns the next Earliest movie that isn't in visited
+    """
+    def nextNode(self, visited):
+        for movie in self.movies:
+            if(visited.count(movie) == 0):
+                earliestStart = movie.getEarliestStart(self.movie.getEndTime(self.startTime))
+                visited.append(movie)
+                nextNode = MovieNode(movie, earliestStart, self.movies)
+                return nextNode
+        return None
 
 """
 @para
@@ -131,7 +137,10 @@ string - military time representation (hr mn)
 """
 def intToTime(time):
     result = str(int(time/60))
-    result += " " + str(time%60)
+    if(time%60 < 10):
+        result += " 0" + str(time%60)
+    else:
+        result += " " + str(time%60)
     return result
 
     
@@ -158,7 +167,10 @@ def main():
             newMovie = Movie(title, times, dur)
             print("\n" + str(newMovie))
             movies.append(newMovie)
-    print("\nEarliest movie you can make: " + intToTime(movies[0].getEarliestStart(startTime)))
+    startNode = MovieNode(movies[0], movies[0].getEarliestStart(startTime), movies)
+    movieMap = MovieMap(startNode)
+    movieMap.fillMap()
+    print("\nEarliest movie you can make: " + str(movieMap.startNode))
 
 main()
             
