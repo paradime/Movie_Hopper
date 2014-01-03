@@ -1,0 +1,6 @@
+ToDo: (in no particular order)
+	List all paths
+	Add path filtering
+	UnitTests
+	API scraper from imdb theater page
+	GUI

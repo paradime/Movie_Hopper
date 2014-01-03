@@ -2,6 +2,7 @@
 Movie Class used by Movie Hopper application
 Author: Bryon Wilkins
 """
+MINUTES_IN_DAY = 1440
 class Movie(object):
     """
     title       - string (title of movie)
@@ -42,7 +43,7 @@ class Movie(object):
     -1 - no more times
     """
     def getEarliestStart(self, start):
-        earliest = 1440 #The maximum number of minutes in one day
+        earliest = MINUTES_IN_DAY #The maximum number of minutes in one day
         for time in self.times:
             #Compare each time to start and the earliest
             #return the number 

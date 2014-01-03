@@ -6,6 +6,8 @@ Author: Bryon Wilkins
 from copy import deepcopy
 from movie import Movie
 
+MINUTES_IN_HOUR = 60
+
 class MovieMap:
     """
     startNode   - MovieNode (the node the map starts at)
@@ -28,6 +30,10 @@ class MovieMap:
         curNode = self.startNode
         while(curNode is not None):
             curNode.next = curNode.nextNode(self.visited)
+            if(curNode.next is not None):
+                endTime = curNode.movie.getEndTime(curNode.startTime)
+                startTime = curNode.next.startTime
+                self.waitTime += startTime - endTime
             curNode = curNode.next
             tempVis = deepcopy(self.visited)
 
@@ -96,9 +102,10 @@ class MovieNode:
         for movie in self.movies:
             if(visited.count(movie) == 0):
                 earliestStart = movie.getEarliestStart(self.movie.getEndTime(self.startTime))
-                visited.append(movie)
-                nextNode = MovieNode(movie, earliestStart, self.movies)
-                return nextNode
+                if(earliestStart != -1):
+                    visited.append(movie)
+                    nextNode = MovieNode(movie, earliestStart, self.movies)
+                    return nextNode
         return None
 
 """
@@ -109,7 +116,7 @@ returns a numeric representation of minutes after midnight this time is
 """
 def timeToInt(time):
     element = time.split()
-    result = int(element[0]) * 60
+    result = int(element[0]) * MINUTES_IN_HOUR
     result += int(element[1])
     return result
 
@@ -120,14 +127,14 @@ time - int (int representation of minutes past midnight)
 string - military time representation (hr mn)
 """
 def intToTime(time):
-    if(int(time/60) < 10):
-        result = "0" + str(int(time/60))
+    if(int(time/MINUTES_IN_HOUR) < 10):
+        result = "0" + str(int(time/MINUTES_IN_HOUR))
     else:
-        result = str(int(time/60))
-    if(time%60 < 10):
-        result += " 0" + str(time%60)
+        result = str(int(time/MINUTES_IN_HOUR))
+    if(time%MINUTES_IN_HOUR < 10):
+        result += " 0" + str(time%MINUTES_IN_HOUR)
     else:
-        result += " " + str(time%60)
+        result += " " + str(time%MINUTES_IN_HOUR)
     return result
 
 """
@@ -171,10 +178,11 @@ def main():
                     times.append(time)
             newMovie = Movie(title, times, dur)
             movies.append(newMovie)
-    startNode = MovieNode(movies[0], movies[0].getEarliestStart(startTime), movies)
-    movieMap = MovieMap(startNode)
-    movieMap.fillMap()
-    print("\nMovie order you can make:")
-    movieMap.startNode.printTable()
+    for i in range(len(movies)):
+        startNode = MovieNode(movies[i], movies[i].getEarliestStart(startTime), movies)
+        movieMap = MovieMap(startNode)
+        movieMap.fillMap()
+        print("\nMovie order you can make: Wait time for this path is " + str(movieMap.waitTime))
+        movieMap.startNode.printTable()
 
 main()
