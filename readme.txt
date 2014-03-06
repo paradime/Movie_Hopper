@@ -1,4 +1,4 @@
-MovieHopper!
+MovieHopper!!
 By Bryon Wilkins (BryonWilkins94@gmail.com)
 
 Movie Hopper is a small tool for rapscallions who want to watch a bunch of 
